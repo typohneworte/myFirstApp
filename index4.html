@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+    <title>My Project</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script type='text/javascript' src='http://www.babylonjs.com/oimo.js'></script>
+    <script type='text/javascript' src='http://www.babylonjs.com/cannon.js'></script>
+    <script type='text/javascript' src='http://www.babylonjs.com/babylon.js'></script>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+	
+
+        #renderCanvas {
+            width:600px;height:600px;border:1px solid black
+        }
+
+		.canvas-wrapper{width:100%; text-align:center}
+    </style>
+</head>
+
+<body>
+	 <form>
+	 Enter Text: <input type="text" name="text1" /><br /><br />
+	 Color 1: <select id="color1" onchange = 'changeColor(this.value, this.id);'>
+		<option value="0">Red</option>
+		<option value="1">Blue</option>
+		<option value="2">Green</option>
+	</select><br />
+	Color 2: <select id="color2" onchange = 'changeColor(this.value, this.id);'>
+		<option value="0">Red</option>
+		<option value="1">Blue</option>
+		<option value="2">Green</option>
+	</select><br />
+	Color 3: <select id="color3" onchange = 'changeColor(this.value, this.id);'>
+		<option value="0">Red</option>
+		<option value="1">Blue</option>
+		<option value="2">Green</option>
+	</select><br /><br />
+  <input type="radio" name="cube-select" value="cube01" checked> Cube 01<br>
+  <input type="radio" name="cube-select" value="cube02"> Cube 02<br>
+</form> 
+    <div class="canvas-wrapper"><canvas id="renderCanvas"></canvas></div>
+    <script>
+
+	function changeColor(number, colorid) {
+            var allMeshChange = false;
+            var i = 0;
+            var color;
+			var newMesh = scene.getMeshByName($('input:radio[name=cube-select]:checked').val());
+
+			//alert(colorid);
+            switch (colorid) {
+				case 'color1': // Red                    
+					newMesh.subMeshes[0].materialIndex = number;
+				break;
+				
+				case 'color2':
+					newMesh.subMeshes[1].materialIndex = number;				
+				break;
+				
+				case 'color3':
+					newMesh.subMeshes[2].materialIndex = number;				
+				break;   
+				
+			}
+	};
+
+	$("input:radio[name=cube-select]").click(function() {
+		var val = $('input:radio[name=cube-select]:checked').val();
+		meshVal = "";
+
+		var mesh = scene.getMeshByName(val);
+		mesh.visibility = 1;
+		arcCamera.target = mesh;
+
+		switch (val)
+		{
+		case "cube01" :		
+			scene.getMeshByName("cube02").visibility = 0;
+		break;
+
+		case "cube02" : 		
+			scene.getMeshByName("cube01").visibility = 0;
+		break;		
+		}
+		
+		});
+
+     	
+		var canvas = document.getElementById('renderCanvas');
+
+		var engine = new BABYLON.Engine(canvas, true);		
+
+		var scene = new BABYLON.Scene(engine);
+
+
+		// Camera
+		var arcCamera = new BABYLON.ArcRotateCamera('ArcRotateCamera', 2.7 * Math.PI / 2, Math.PI / 2, 3, BABYLON.Vector3.Zero(), scene);
+
+		arcCamera.attachControl(canvas);		
+
+		// Camera mouse wheel zoom speed
+		arcCamera.wheelPrecision = 500;
+
+
+		// Lights
+		var light = new BABYLON.HemisphericLight("Hemi0", new BABYLON.Vector3(0, 1, 0), scene);
+		
+		var light1 = new BABYLON.HemisphericLight("Hemi1", new BABYLON.Vector3(1, 0, 0), scene);
+
+		// Import Mesh
+		BABYLON.SceneLoader.ImportMesh("", "", "mycubes.babylon", scene, true);	
+		
+
+		// Background scene color
+		scene.clearColor = new BABYLON.Color4(0.9,0.9,0.9); 
+		
+
+		scene.executeWhenReady(function () {
+            
+			scene.getMeshByName("cube02").visibility = 0;
+           
+			engine.runRenderLoop(function(){			
+			scene.render();
+			});
+		});
+
+    </script>
+</body>
+
+</html>
